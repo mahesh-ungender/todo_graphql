@@ -21,8 +21,8 @@ func (t *Todo) TableName() string {
 func (t *Todo) Serialize() *graphmodel.Todo {
 	res := &graphmodel.Todo{
 		ID:              t.ID,
-		ItemName:        t.ItemName,
-		Status:          t.Status,
+		ItemName:        *t.ItemName,
+		Status:          *t.Status,
 	}
 	return res
 }

@@ -29,8 +29,8 @@ func (c *todo) Create(ctx context.Context, data graphmodel.Todo) (*graphmodel.Ne
 	u := &graphmodel.NewTodo{}
 
 	doc := &models.Todo{
-		ItemName:       data.ItemName,
-		Status:        data.Status,
+		ItemName:       &data.ItemName,
+		Status:        &data.Status,
 	}
 
 	err := c.todoRepo.Save(ctx, doc)
@@ -77,8 +77,8 @@ func (c *todo) UpdateItem(ctx context.Context, data graphmodel.Todo) (*graphmode
 	}
 
 	// update entries
-	doc.ItemName = utils.CheckNullAndSet(doc.ItemName, data.ItemName)
-	doc.Status = utils.CheckNullAndSet(doc.Status, data.Status)
+	doc.ItemName = utils.CheckNullAndSet(doc.ItemName, &data.ItemName)
+	doc.Status = utils.CheckNullAndSet(doc.Status, &data.Status)
 
 	err = c.todoRepo.Update(ctx,doc, []string{})
 	if err != nil {

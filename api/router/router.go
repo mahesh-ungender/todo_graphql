@@ -22,17 +22,10 @@ import (
 
 func graphqlHandler(dependencies service.Services, introspectionEnabled bool) gin.HandlerFunc {
 	h := handler.New(
-		// generated.NewExecutableSchema(
-		// 	generated.Config{
-		// 		Resolvers: &graph.Resolver{
-		// 			Services: dependencies,
-		// 		},
-		// 	},
-		// ),
-		generated.NewExecutableSchema(
-			generated.Config{
+		graph.NewExecutableSchema(
+			graph.Config{
 				Resolvers: &graph.Resolver{
-					Services: dependencies,
+					Service: dependencies,
 				},
 			},
 		),
