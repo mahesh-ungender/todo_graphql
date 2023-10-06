@@ -12,22 +12,22 @@ import (
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+	return r.Resolver.Service.Todo().Create(ctx, input)
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
 func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.TodoInput) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: UpdateTodo - updateTodo"))
+	//return r.Service.Todo().UpdateItem(ctx, input)
 }
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context, input model.NewTodo) (*model.TodoList, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+	return r.Resolver.Service.Todo().GetAllItems(ctx, input)
 }
 
 // GetTodo is the resolver for the getTodo field.
 func (r *queryResolver) GetTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: GetTodo - getTodo"))
+	//return r.Resolver.Service.Todo().RemoveItem(ctx , input)
 }
 
 // Mutation returns MutationResolver implementation.

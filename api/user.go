@@ -6,7 +6,6 @@ import (
 	"todo_graphql/constants"
 	"todo_graphql/db/models"
 	"todo_graphql/graph/model"
-	graphmodel "todo_graphql/graph/model"
 	"todo_graphql/utils"
 
 	apiutils "todo_graphql/api/utils"
@@ -16,17 +15,17 @@ import (
 )
 
 type Todo interface {
-	Create(ctx context.Context, input model.NewTodo) (*model.NewTodo, error)
+	Create(ctx context.Context, input model.NewTodo) (*model.Todo, error)
 	GetAllItems(ctx context.Context, input model.NewTodo) (*model.TodoList, error)
 	UpdateItem(ctx context.Context, input model.NewTodo) (*model.Todo, error)
-	RemoveItem(ctx context.Context, input model.NewTodo) (bool, error)
+	RemoveItem(ctx context.Context, input model.Todo) (bool, error)
 }
 
 type todo struct {
 	todoRepo repository.TodoRepo
 }
 
-func (c *todo) Create(ctx context.Context, input model.NewTodo) (*model.NewTodo, error) {
+func (c *todo) Create(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 
 	doc := &models.Todo{
 		ItemName: &input.ItemName,
@@ -42,7 +41,8 @@ func (c *todo) Create(ctx context.Context, input model.NewTodo) (*model.NewTodo,
 		return nil, apiutils.HandleError(ctx, constants.InternalServerError, err)
 	}
 
-	return &model.NewTodo{
+	return &model.Todo{
+		ID: *&doc.Serialize().ID,
 		ItemName: *doc.ItemName,
 		Status:   *doc.Status,
 	}, nil
@@ -80,36 +80,33 @@ func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.Tod
 
 // UpdateUser is the resolver for updating a user
 func (c *todo) UpdateItem(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	var u *graphmodel.Todo
 
-	doc, err := c.todoRepo.FindByID(ctx, data.ID)
-
-	if err != nil {
-		if err == orm.ErrNoRows {
-			return u, apiutils.HandleError(ctx, constants.NotFound, err)
-		}
-		return u, apiutils.HandleError(ctx, constants.InternalServerError, err)
+	doc := &models.Todo{
+		ItemName: &input.ItemName,
+		Status: &input.Status,
 	}
+
 
 	// update entries
-	doc.ItemName = utils.CheckNullAndSet(doc.ItemName, &data.ItemName)
-	doc.Status = utils.CheckNullAndSet(doc.Status, &data.Status)
+	doc.ItemName = utils.CheckNullAndSet(doc.ItemName, &input.ItemName)
+	doc.Status = utils.CheckNullAndSet(doc.Status, &input.Status)
 
-	err = c.todoRepo.Update(ctx, doc, []string{})
+	err := c.todoRepo.Update(ctx, doc, []string{})
+	
 	if err != nil {
-		if err == orm.ErrNoRows {
-			return u, apiutils.HandleError(ctx, constants.NotFound, err)
-		}
-		return u, apiutils.HandleError(ctx, constants.InternalServerError, err)
+		return nil, apiutils.HandleError(ctx, constants.InternalServerError, err)
 	}
 
-	return u, nil
+	return &model.Todo{
+		ItemName: *doc.ItemName,
+		Status:   *doc.Status,
+	}, nil
 }
 
 // RemoveUserFromTeam is the resolver for removing a user from a team
-func (c *todo) RemoveItem(ctx context.Context, input model.NewTodo) (bool, error) {
+func (c *todo) RemoveItem(ctx context.Context, input model.Todo) (bool, error) {
 
-	err := c.todoRepo.Delete(ctx, data.ID)
+	err := c.todoRepo.Delete(ctx, input.ID)
 
 	if err != nil {
 		if err == orm.ErrNoRows {
