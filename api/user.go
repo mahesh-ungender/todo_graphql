@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+	"strconv"
 	"todo_graphql/constants"
 	"todo_graphql/db/models"
 	"todo_graphql/graph/model"
@@ -17,7 +18,7 @@ import (
 type Todo interface {
 	Create(ctx context.Context, input model.NewTodo) (*model.Todo, error)
 	GetAllItems(ctx context.Context, input model.NewTodo) (*model.TodoList, error)
-	UpdateItem(ctx context.Context, input model.NewTodo) (*model.Todo, error)
+	UpdateItem(ctx context.Context, input model.TodoInput) (*model.Todo, error)
 	RemoveItem(ctx context.Context, input model.Todo) (bool, error)
 }
 
@@ -42,7 +43,7 @@ func (c *todo) Create(ctx context.Context, input model.NewTodo) (*model.Todo, er
 	}
 
 	return &model.Todo{
-		ID: *&doc.Serialize().ID,
+		ID:       *&doc.Serialize().ID,
 		ItemName: *doc.ItemName,
 		Status:   *doc.Status,
 	}, nil
@@ -79,20 +80,19 @@ func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.Tod
 }
 
 // UpdateUser is the resolver for updating a user
-func (c *todo) UpdateItem(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+func (c *todo) UpdateItem(ctx context.Context, input model.TodoInput) (*model.Todo, error) {
 
 	doc := &models.Todo{
 		ItemName: &input.ItemName,
-		Status: &input.Status,
+		Status:   &input.Status,
 	}
-
 
 	// update entries
 	doc.ItemName = utils.CheckNullAndSet(doc.ItemName, &input.ItemName)
 	doc.Status = utils.CheckNullAndSet(doc.Status, &input.Status)
 
 	err := c.todoRepo.Update(ctx, doc, []string{})
-	
+
 	if err != nil {
 		return nil, apiutils.HandleError(ctx, constants.InternalServerError, err)
 	}
@@ -106,7 +106,13 @@ func (c *todo) UpdateItem(ctx context.Context, input model.NewTodo) (*model.Todo
 // RemoveUserFromTeam is the resolver for removing a user from a team
 func (c *todo) RemoveItem(ctx context.Context, input model.Todo) (bool, error) {
 
-	err := c.todoRepo.Delete(ctx, input.ID)
+	id, err := strconv.ParseInt(input.ID, 10, 64)
+
+	if err != nil {
+		return false, apiutils.HandleError(ctx, constants.InternalServerError, err)
+	}
+
+	err = c.todoRepo.Delete(ctx, id)
 
 	if err != nil {
 		if err == orm.ErrNoRows {
