@@ -8,7 +8,13 @@ type NewTodo struct {
 }
 
 type Todo struct {
-	ID       int64 `json:"id"`
+	ID       string `json:"id"`
+	ItemName string `json:"ItemName"`
+	Status   string `json:"Status"`
+}
+
+type TodoInput struct {
+	ID       string `json:"id"`
 	ItemName string `json:"ItemName"`
 	Status   string `json:"Status"`
 }

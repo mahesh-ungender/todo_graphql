@@ -2,14 +2,13 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Query {
-  #todos
-
-  todos(input: NewTodo!): TodoList!
-  gettodo(input: NewTodo!): Todo!
+type Todo {
+  id: ID!
+  ItemName: String!
+  Status: String!
 }
 
-type Todo {
+input TodoInput{
   id: ID!
   ItemName: String!
   Status: String!
@@ -24,6 +23,14 @@ type TodoList{
   todos: [Todo!]!
 }
 
+type Query {
+  #todos
+
+  todos(input: NewTodo!): TodoList!
+  getTodo(input: NewTodo!): Todo!
+}
+
 type Mutation {
   createTodo(input: NewTodo!): Todo!
+  updateTodo(input: TodoInput!): Todo!
 }
