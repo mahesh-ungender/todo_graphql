@@ -33,8 +33,4 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   updateTodo(input: NewTodo!): Todo!
-  // i think we have to generate this two func
- // removeTodo(input: Todo!): Boolean!
- // getallTodo(input: Todo!): Todo!
-
 }

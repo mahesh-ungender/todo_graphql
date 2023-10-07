@@ -113,7 +113,7 @@ func (c *todo) RemoveItem(ctx context.Context, input model.Todo) (bool, error) {
 	}
 
 	err = c.todoRepo.Delete(ctx, id)
-
+	
 	if err != nil {
 		if err == orm.ErrNoRows {
 			return false, apiutils.HandleError(ctx, constants.InvalidRequestData, errors.New(constants.TeamDoesNotExist))
