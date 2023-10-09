@@ -67,7 +67,7 @@ func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.Tod
 
 	for _, todo := range totalRows {
 		todoObj := model.Todo{
-			ID:       string(todo.ID),
+			ID:       string(rune(todo.ID)),
 			ItemName: *todo.ItemName,
 			Status:   *todo.Status,
 		}

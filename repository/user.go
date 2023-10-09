@@ -25,6 +25,7 @@ func (repo *todoRepo) Save(ctx context.Context, doc *models.Todo) error {
 	groupError := "CREATE_ITEM"
 
 	logger.Log.Info("Inserting item in the db")
+	
 	id, err := repo.db.Insert(doc)
 	if err != nil {
 		logger.Log.WithError(err).Error(groupError)

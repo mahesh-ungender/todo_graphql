@@ -22,7 +22,7 @@ func (postgresConfig *postgres) load() {
 	postgresConfig.port = "5432"
 	postgresConfig.user = "postgres"
 	postgresConfig.userPassword = "123"
-	postgresConfig.database = "graph_beego"
+	postgresConfig.database = "todo_beego"
 	postgresConfig.connURL = "postgres://postgres:123@localhost:5432/todo_beego?sslmode=disable"
 }
 
