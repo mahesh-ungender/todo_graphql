@@ -19,6 +19,10 @@ input NewTodo{
    Status: String!
 }
 
+input TodoInputfordelete {
+  id: ID!
+}
+
 type TodoList{
   todos: [Todo!]!
 }
@@ -26,11 +30,11 @@ type TodoList{
 type Query {
   #todos
 
-  todos(input: NewTodo!): TodoList!
   getTodo(input: NewTodo!): Todo!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
-  updateTodo(input: NewTodo!): Todo!
+  updateTodo(input: TodoInput!): Todo!
+  deleteTodo(input: TodoInputfordelete!): Boolean!
 }

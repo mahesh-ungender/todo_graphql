@@ -1,15 +1,11 @@
 package models
 
-import (
-	graphmodel "todo_graphql/graph/model"
-
-	"github.com/astaxie/beego/orm"
-)
+import "github.com/astaxie/beego/orm"
 
 // todo model for todo
 type Todo struct {
 	ID       int64   `orm:"pk;auto;column(id)" json:"id"`
-	ItemName *string `json:"itemname" orm:"null"`
+	ItemName *string `json:"item_name" orm:"null"`
 	Status   *string `json:"status" orm:"null"`
 }
 
@@ -18,15 +14,15 @@ func (t *Todo) TableName() string {
 	return "items"
 }
 
-// Serialize serializes the user model to response
-func (t *Todo) Serialize() *graphmodel.Todo {
-	res := &graphmodel.Todo{
-		ID:       string(t.ID),
-		ItemName: *t.ItemName,
-		Status:   *t.Status,
-	}
-	return res
-}
+// // Serialize serializes the user model to response
+// func (t *Todo) Serialize() *graphmodel.Todo {
+// 	res := &graphmodel.Todo{
+// 	//	ID:       *int64(t.ID),
+// 		ItemName: *t.ItemName,
+// 		Status:   *t.Status,
+// 	}
+// 	return res
+// }
 
 // register the tablw
 func init() {

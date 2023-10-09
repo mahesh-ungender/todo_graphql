@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"errors"
-	"strconv"
 	"todo_graphql/constants"
 	"todo_graphql/db/models"
 	"todo_graphql/graph/model"
@@ -19,7 +18,7 @@ type Todo interface {
 	Create(ctx context.Context, input model.NewTodo) (*model.Todo, error)
 	GetAllItems(ctx context.Context, input model.NewTodo) (*model.TodoList, error)
 	UpdateItem(ctx context.Context, input model.TodoInput) (*model.Todo, error)
-	RemoveItem(ctx context.Context, input model.Todo) (bool, error)
+	RemoveItem(ctx context.Context, input model.TodoInputfordelete) (bool, error)
 }
 
 type todo struct {
@@ -43,7 +42,7 @@ func (c *todo) Create(ctx context.Context, input model.NewTodo) (*model.Todo, er
 	}
 
 	return &model.Todo{
-		ID:       *&doc.Serialize().ID,
+		ID:       doc.ID,
 		ItemName: *doc.ItemName,
 		Status:   *doc.Status,
 	}, nil
@@ -67,7 +66,7 @@ func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.Tod
 
 	for _, todo := range totalRows {
 		todoObj := model.Todo{
-			ID:       string(rune(todo.ID)),
+			ID:      todo.ID,
 			ItemName: *todo.ItemName,
 			Status:   *todo.Status,
 		}
@@ -83,6 +82,7 @@ func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.Tod
 func (c *todo) UpdateItem(ctx context.Context, input model.TodoInput) (*model.Todo, error) {
 
 	doc := &models.Todo{
+		ID: input.ID,
 		ItemName: &input.ItemName,
 		Status:   &input.Status,
 	}
@@ -98,21 +98,22 @@ func (c *todo) UpdateItem(ctx context.Context, input model.TodoInput) (*model.To
 	}
 
 	return &model.Todo{
+		ID: doc.ID,
 		ItemName: *doc.ItemName,
 		Status:   *doc.Status,
 	}, nil
 }
 
 // RemoveUserFromTeam is the resolver for removing a user from a team
-func (c *todo) RemoveItem(ctx context.Context, input model.Todo) (bool, error) {
+func (c *todo) RemoveItem(ctx context.Context, data model.TodoInputfordelete) (bool, error) {
 
-	id, err := strconv.ParseInt(input.ID, 10, 64)
+	id := data.ID
 
-	if err != nil {
-		return false, apiutils.HandleError(ctx, constants.InternalServerError, err)
-	}
+	// if err != nil {
+	// 	return false, apiutils.HandleError(ctx, constants.InternalServerError, err)
+	// }
 
-	err = c.todoRepo.Delete(ctx, id)
+	err := c.todoRepo.Delete(ctx, id)
 	
 	if err != nil {
 		if err == orm.ErrNoRows {
@@ -130,3 +131,4 @@ func NewTodo(todoRepo repository.TodoRepo) Todo {
 		todoRepo: todoRepo,
 	}
 }
+

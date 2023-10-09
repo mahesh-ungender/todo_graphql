@@ -8,15 +8,19 @@ type NewTodo struct {
 }
 
 type Todo struct {
-	ID       string `json:"id"`
+	ID       int64  `json:"id"`
 	ItemName string `json:"ItemName"`
 	Status   string `json:"Status"`
 }
 
 type TodoInput struct {
-	ID       string `json:"id"`
+	ID       int64  `json:"id"`
 	ItemName string `json:"ItemName"`
 	Status   string `json:"Status"`
+}
+
+type TodoInputfordelete struct {
+	ID int64 `json:"id"`
 }
 
 type TodoList struct {

@@ -62,7 +62,7 @@ func (repo *todoRepo) Update(ctx context.Context, doc *models.Todo, fieldsToUpda
 
 	//doc.UpdatedAt = time.Now().Unix()
 
-	logger.Log.Info("Updating item in the db")
+			logger.Log.Info("Updating item in the db")
 	_, err := repo.db.Update(doc, fieldsToUpdate...)
 	if err != nil {
 		logger.Log.WithError(err).Error(groupError)
@@ -81,7 +81,7 @@ func (repo *todoRepo) Delete(ctx context.Context, ID int64) error {
 	}
 
 	logger.Log.Info("Deleting item in the db")
-	_, err := repo.db.Update(&user, "IsInactive")
+	_, err := repo.db.Delete(&user)
 	if err != nil {
 		logger.Log.WithError(err).Error(groupError)
 		return err
