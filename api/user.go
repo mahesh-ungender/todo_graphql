@@ -16,7 +16,7 @@ import (
 
 type Todo interface {
 	Create(ctx context.Context, input model.NewTodo) (*model.Todo, error)
-	GetAllItems(ctx context.Context, input model.NewTodo) (*model.TodoList, error)
+	GetAllItems(ctx context.Context) (*model.TodoList, error)
 	UpdateItem(ctx context.Context, input model.TodoInput) (*model.Todo, error)
 	RemoveItem(ctx context.Context, input model.TodoInputfordelete) (bool, error)
 }
@@ -49,20 +49,15 @@ func (c *todo) Create(ctx context.Context, input model.NewTodo) (*model.Todo, er
 }
 
 // GetAllUsers is the resolver for listing all the users
-func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.TodoList, error) {
+func (c *todo) GetAllItems(ctx context.Context) (*model.TodoList, error) {
 
-	doc := &models.Todo{
-		ItemName: &input.ItemName,
-		Status:   &input.Status,
-	}
-
-	totalRows, _, err := c.todoRepo.GetAll(ctx, *doc)
+	totalRows, _, err := c.todoRepo.GetAll(ctx)
 
 	if err != nil {
 		return nil, apiutils.HandleError(ctx, constants.InternalServerError, err)
 	}
 
-	var todoList *model.TodoList
+	var todoList model.TodoList
 
 	for _, todo := range totalRows {
 		todoObj := model.Todo{
@@ -75,7 +70,7 @@ func (c *todo) GetAllItems(ctx context.Context, input model.NewTodo) (*model.Tod
 
 	}
 
-	return todoList, nil
+	return &todoList, nil
 }
 
 // UpdateUser is the resolver for updating a user

@@ -30,7 +30,7 @@ type TodoList{
 type Query {
   #todos
 
-  getTodo(input: NewTodo!): Todo!
+  getTodo: TodoList!
 }
 
 type Mutation {

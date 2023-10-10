@@ -52,7 +52,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetTodo func(childComplexity int, input model.NewTodo) int
+		GetTodo func(childComplexity int) int
 	}
 
 	Todo struct {
@@ -72,7 +72,7 @@ type MutationResolver interface {
 	DeleteTodo(ctx context.Context, input model.TodoInputfordelete) (bool, error)
 }
 type QueryResolver interface {
-	GetTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
+	GetTodo(ctx context.Context) (*model.TodoList, error)
 }
 
 type executableSchema struct {
@@ -131,12 +131,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_getTodo_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetTodo(childComplexity, args["input"].(model.NewTodo)), true
+		return e.complexity.Query.GetTodo(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -350,21 +345,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_getTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewTodo
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewTodo2todo_graphqlᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
 	return args, nil
 }
 
@@ -601,7 +581,7 @@ func (ec *executionContext) _Query_getTodo(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetTodo(rctx, fc.Args["input"].(model.NewTodo))
+		return ec.resolvers.Query().GetTodo(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -613,9 +593,9 @@ func (ec *executionContext) _Query_getTodo(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Todo)
+	res := resTmp.(*model.TodoList)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖtodo_graphqlᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNTodoList2ᚖtodo_graphqlᚋgraphᚋmodelᚐTodoList(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -626,26 +606,11 @@ func (ec *executionContext) fieldContext_Query_getTodo(ctx context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "ItemName":
-				return ec.fieldContext_Todo_ItemName(ctx, field)
-			case "Status":
-				return ec.fieldContext_Todo_Status(ctx, field)
+			case "todos":
+				return ec.fieldContext_TodoList_todos(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TodoList", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
@@ -3523,6 +3488,20 @@ func (ec *executionContext) unmarshalNTodoInput2todo_graphqlᚋgraphᚋmodelᚐT
 func (ec *executionContext) unmarshalNTodoInputfordelete2todo_graphqlᚋgraphᚋmodelᚐTodoInputfordelete(ctx context.Context, v interface{}) (model.TodoInputfordelete, error) {
 	res, err := ec.unmarshalInputTodoInputfordelete(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTodoList2todo_graphqlᚋgraphᚋmodelᚐTodoList(ctx context.Context, sel ast.SelectionSet, v model.TodoList) graphql.Marshaler {
+	return ec._TodoList(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTodoList2ᚖtodo_graphqlᚋgraphᚋmodelᚐTodoList(ctx context.Context, sel ast.SelectionSet, v *model.TodoList) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._TodoList(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

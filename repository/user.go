@@ -10,7 +10,7 @@ import (
 
 type TodoRepo interface {
 	Save(ctx context.Context, doc *models.Todo ) error
-	GetAll(ctx context.Context, query models.Todo) ([]*models.Todo,int64, error)
+	GetAll(ctx context.Context) ([]*models.Todo,int64, error)
 	FindByID(ctx context.Context, id int64) (*models.Todo, error)
 	Update(ctx context.Context, doc *models.Todo, fieldsToUpdate []string) error
 	Delete(ctx context.Context, ID int64) error
@@ -37,23 +37,23 @@ func (repo *todoRepo) Save(ctx context.Context, doc *models.Todo) error {
 }
 
 // GetAll returns all the users in the db
-func (repo *todoRepo) GetAll(ctx context.Context, query models.Todo) ([]*models.Todo,int64, error) {
+func (repo *todoRepo) GetAll(ctx context.Context) ([]*models.Todo,int64, error) {
 	groupError := "GET_ALL_ITEMS"
 	var items []*models.Todo
 
 	logger.Log.Info("Getting all items")
 	qs := repo.db.QueryTable(new(models.Todo))
 
-	// num := qs.Distinct().All(&items)
-	// logger.Log.Info(fmt.Sprintf("Read %d items from the db", num))
+     num, err := qs.Distinct().All(&items)
+	 //logger.Log.Info(fmt.Sprintf("Read %d items from the db", num))
 
-	cnt, err := qs.GroupBy("id").Count()
+	//cnt, err := qs.GroupBy("id").Count()
 	if err != nil {
 		logger.Log.WithError(err).Error(groupError)
 		return items, 0, err
 	}
 
-	return items, cnt, nil
+	return items, num, nil
 }
 
 // Update updates the existing item's attributes in the database

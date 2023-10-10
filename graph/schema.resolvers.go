@@ -25,8 +25,8 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, input model.TodoInput
 }
 
 // GetTodo is the resolver for the getTodo field.
-func (r *queryResolver) GetTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	return r.Query().GetTodo(ctx, input)
+func (r *queryResolver) GetTodo(ctx context.Context) (*model.TodoList, error) {
+	return r.Service.Todo().GetAllItems(ctx)
 }
 
 // Mutation returns MutationResolver implementation.
@@ -37,13 +37,3 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) Todos(ctx context.Context, input model.NewTodo) (*model.TodoList, error) {
-	return r.Resolver.Service.Todo().GetAllItems(ctx, input)
-}
